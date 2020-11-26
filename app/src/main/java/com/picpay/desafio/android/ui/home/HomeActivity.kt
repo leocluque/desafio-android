@@ -55,7 +55,7 @@ class HomeActivity : AppCompatActivity(R.layout.activity_main) {
         viewModel.run {
             viewState.observe(this@HomeActivity, Observer {
                 when (it) {
-                    is ViewState.ShowContacts -> setAdapter(it.contacts)
+                    is ViewState.ShowContacts -> showContactList(it.contacts)
                 }
             })
             viewEvent.observe(this@HomeActivity, Observer {
@@ -67,7 +67,7 @@ class HomeActivity : AppCompatActivity(R.layout.activity_main) {
         }
     }
 
-    private fun setAdapter(list: List<ContactModel>) {
+    private fun showContactList(list: List<ContactModel>) {
         adapter.users = list
     }
 }
