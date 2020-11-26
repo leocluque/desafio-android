@@ -11,8 +11,6 @@ import com.appfactory.domain.model.ContactModel
 import com.picpay.desafio.android.R
 import com.picpay.desafio.android.extensions.setVisible
 import com.picpay.desafio.android.ui.home.adapter.UserListAdapter
-import com.picpay.desafio.android.ui.home.states.ViewEvent
-import com.picpay.desafio.android.ui.home.states.ViewState
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class HomeActivity : AppCompatActivity(R.layout.activity_main) {
@@ -31,8 +29,20 @@ class HomeActivity : AppCompatActivity(R.layout.activity_main) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setView()
+        handleViewStates()
         viewModel.getUsers()
-        setObservables()
+    }
+
+    private fun handleViewStates() {
+        viewModel.run {
+            homeViewState.observe(this@HomeActivity, Observer { state ->
+                with(state) {
+                    onLoadingState(isLoading)
+                    onErrorState(showError)
+                    onShowContactListState(contactList)
+                }
+            })
+        }
     }
 
     private fun setView() {
@@ -41,33 +51,19 @@ class HomeActivity : AppCompatActivity(R.layout.activity_main) {
         textError = findViewById(R.id.text_error)
     }
 
-    private fun showLoading(loading: Boolean) {
+    private fun onLoadingState(loading: Boolean) {
         progressBar.setVisible(loading)
         textError.setVisible(false)
     }
 
-    private fun showError() {
-        textError.setVisible(true)
+    private fun onErrorState(showError: Boolean) {
+        textError.setVisible(showError)
         textError.text = getString(R.string.error)
+        recyclerView.setVisible(false)
     }
 
-    private fun setObservables() {
-        viewModel.run {
-            viewState.observe(this@HomeActivity, Observer {
-                when (it) {
-                    is ViewState.ShowContacts -> showContactList(it.contacts)
-                }
-            })
-            viewEvent.observe(this@HomeActivity, Observer {
-                when (it) {
-                    is ViewEvent.ShowError -> showError()
-                    is ViewEvent.ShowLoading -> showLoading(it.isLoading)
-                }
-            })
-        }
-    }
-
-    private fun showContactList(list: List<ContactModel>) {
+    private fun onShowContactListState(list: List<ContactModel>) {
+        recyclerView.setVisible(true)
         adapter.users = list
     }
 }

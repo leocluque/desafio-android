@@ -3,26 +3,20 @@ package com.picpay.desafio.android
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.appfactory.domain.model.ContactModel
 import com.appfactory.domain.usecase.ContactUseCase
+import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import com.picpay.desafio.android.ui.home.HomeViewModel
-import com.picpay.desafio.android.ui.home.states.ViewEvent
-import com.picpay.desafio.android.ui.home.states.ViewState
+import com.picpay.desafio.android.ui.home.states.HomeViewState
 import io.reactivex.Single
-import io.reactivex.android.plugins.RxAndroidPlugins
-import org.junit.After
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.InjectMocks
-import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
 class HomeViewModelTest {
-    @Mock
-    lateinit var contactUseCase: ContactUseCase
 
-    @InjectMocks
+    private val contactUseCase: ContactUseCase = mock()
     lateinit var homeViewModel: HomeViewModel
 
     @Rule
@@ -33,37 +27,56 @@ class HomeViewModelTest {
     @JvmField
     var testSchedulerRule = RxImmediateSchedulerRule()
 
+    private val expectedLoadingState = HomeViewState(
+        true,
+        emptyList(),
+        false
+    )
+    private val expectedContactListState = HomeViewState(
+        false,
+        mockedUserResponse(),
+        false
+    )
+
+    private val expectedContactEmptyListState = HomeViewState(
+        false,
+        emptyList(),
+        false
+    )
+
+    private val expectedShowErrorState = HomeViewState(
+        false,
+        emptyList(),
+        true
+    )
+
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        homeViewModel = HomeViewModel(contactUseCase)
     }
 
     @Test
     fun shouldSuccessWhenGetData() {
         whenever(contactUseCase.getContacts()).thenReturn(Single.just(mockedUserResponse()))
-
         homeViewModel.getUsers()
 
-        assertTrue(ViewState.ShowContacts(mockedUserResponse()) == homeViewModel.viewState.value)
+        assertTrue(expectedContactListState == homeViewModel.homeViewState.value)
     }
 
     @Test
     fun shouldSuccessButEmptyList() {
         whenever(contactUseCase.getContacts()).thenReturn(Single.just(emptyList()))
-
         homeViewModel.getUsers()
 
-        assertTrue(ViewState.ShowContacts(emptyList()) == homeViewModel.viewState.value)
+        assertTrue(expectedContactEmptyListState == homeViewModel.homeViewState.value)
     }
 
     @Test
     fun shouldErrorWhenGetData() {
         val e = Throwable(message = "Ocorreu um problema tente novamente.")
         whenever(contactUseCase.getContacts()).thenReturn(Single.error(e))
-
         homeViewModel.getUsers()
-
-        assertTrue(homeViewModel.viewEvent.value == ViewEvent.ShowError(e.message))
+        assertTrue(expectedShowErrorState == homeViewModel.homeViewState.value)
     }
 
     private fun mockedUserResponse() = listOf(

@@ -2,8 +2,8 @@ package com.picpay.desafio.android.base
 
 import android.app.Application
 import com.appfactory.data.di.dataModule
-import com.appfactory.domain.di.moduleDomain
 import com.picpay.desafio.android.di.homeModule
+import com.picpay.desafio.android.di.moduleDomain
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 

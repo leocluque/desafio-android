@@ -3,30 +3,37 @@ package com.picpay.desafio.android.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.appfactory.domain.model.ContactModel
 import com.appfactory.domain.usecase.ContactUseCase
 import com.picpay.desafio.android.extensions.singleSubscribe
-import com.picpay.desafio.android.ui.home.states.ViewEvent
-import com.picpay.desafio.android.ui.home.states.ViewState
+import com.picpay.desafio.android.ui.home.states.HomeViewState
 import io.reactivex.disposables.CompositeDisposable
 
-class HomeViewModel(private val contactApi: ContactUseCase) : ViewModel() {
+class HomeViewModel(private val contactUseCase: ContactUseCase) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
-    private var eventHome = MutableLiveData<ViewEvent>()
-    val viewEvent: LiveData<ViewEvent> = eventHome
-    private var stateHome = MutableLiveData<ViewState>()
-    val viewState: LiveData<ViewState> = stateHome
+    private var stateHome = MutableLiveData<HomeViewState>()
+    val homeViewState: LiveData<HomeViewState> = stateHome
+
+    init {
+        stateHome.value = HomeViewState().showLoading()
+    }
 
     fun getUsers() {
-        eventHome.value = ViewEvent.ShowLoading(true)
-        compositeDisposable.add(contactApi.getContacts().singleSubscribe(onSuccess = {
-            eventHome.value = ViewEvent.ShowLoading(false)
-            stateHome.value = ViewState.ShowContacts(it)
+        compositeDisposable.add(contactUseCase.getContacts().singleSubscribe(onSuccess = {
+            showContacts(it)
         }, onError = {
-            eventHome.value = ViewEvent.ShowLoading(false)
-            stateHome.value = ViewState.ShowContacts(emptyList())
-            eventHome.value = ViewEvent.ShowError(it.message)
+            showError()
         }))
+    }
+
+    private fun showContacts(list: List<ContactModel>) =
+        setState(homeViewState.value?.showContacts(list))
+
+    private fun showError() = setState(stateHome.value?.showError())
+
+    private fun setState(state: HomeViewState?) {
+        stateHome.value = state
     }
 
     override fun onCleared() {

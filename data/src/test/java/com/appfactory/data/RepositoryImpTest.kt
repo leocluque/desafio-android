@@ -1,9 +1,9 @@
 package com.appfactory.data
 
-import com.appfactory.data.repository.ContactRepository
 import com.appfactory.data.repository.ContactRepositoryImp
 import com.appfactory.data.source.model.response.ContactResponse
 import com.appfactory.data.source.remote.services.PicPayService
+import com.appfactory.domain.repository.ContactRepository
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single

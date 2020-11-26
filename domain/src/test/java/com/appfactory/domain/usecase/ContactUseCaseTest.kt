@@ -1,7 +1,7 @@
 package com.appfactory.domain.usecase
 
-import com.appfactory.data.repository.ContactRepository
-import com.appfactory.data.source.model.response.ContactResponse
+import com.appfactory.domain.model.ContactModel
+import com.appfactory.domain.repository.ContactRepository
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import io.reactivex.Single
@@ -14,7 +14,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 
-class ContactUseCaseImpTest {
+class ContactUseCaseTest {
 
     @Mock
     lateinit var contactRepository: ContactRepository
@@ -24,7 +24,7 @@ class ContactUseCaseImpTest {
     fun init() {
         MockitoAnnotations.initMocks(this)
         RxJavaPlugins.setIoSchedulerHandler { Schedulers.trampoline() }
-        contactUseCase = ContactUseCaseImp(contactRepository)
+        contactUseCase = ContactUseCase(contactRepository)
     }
 
     @Test
@@ -45,8 +45,8 @@ class ContactUseCaseImpTest {
 
     private fun getMockUserList() = Single.just(
         listOf(
-            ContactResponse(12, "Leo teste1", "leoTeste1", ""),
-            ContactResponse(123, "Leo teste2", "leoTeste2", "")
+            ContactModel(12, "Leo teste1", "leoTeste1", ""),
+            ContactModel(123, "Leo teste2", "leoTeste2", "")
         )
     )
 }
