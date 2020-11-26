@@ -21,7 +21,6 @@ class HomeViewModel(private val contactApi: ContactUseCase) : ViewModel() {
         compositeDisposable.add(contactApi.getContacts().singleSubscribe(onSuccess = {
             eventHome.value = ViewEvent.ShowLoading(false)
             stateHome.value = ViewState.ShowContacts(it)
-
         }, onError = {
             eventHome.value = ViewEvent.ShowLoading(false)
             stateHome.value = ViewState.ShowContacts(emptyList())
