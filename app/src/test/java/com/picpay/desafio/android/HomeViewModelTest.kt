@@ -12,7 +12,6 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.MockitoAnnotations
 
 class HomeViewModelTest {
 
@@ -27,11 +26,6 @@ class HomeViewModelTest {
     @JvmField
     var testSchedulerRule = RxImmediateSchedulerRule()
 
-    private val expectedLoadingState = HomeViewState(
-        true,
-        emptyList(),
-        false
-    )
     private val expectedContactListState = HomeViewState(
         false,
         mockedUserResponse(),
@@ -76,6 +70,7 @@ class HomeViewModelTest {
         val e = Throwable(message = "Ocorreu um problema tente novamente.")
         whenever(contactUseCase.getContacts()).thenReturn(Single.error(e))
         homeViewModel.getUsers()
+
         assertTrue(expectedShowErrorState == homeViewModel.homeViewState.value)
     }
 

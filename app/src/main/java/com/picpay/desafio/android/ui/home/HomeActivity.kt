@@ -28,9 +28,11 @@ class HomeActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (savedInstanceState == null) {
+            viewModel.getUsers()
+        }
         setView()
         handleViewStates()
-        viewModel.getUsers()
     }
 
     private fun handleViewStates() {
