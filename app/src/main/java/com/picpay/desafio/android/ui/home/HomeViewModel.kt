@@ -1,5 +1,6 @@
 package com.picpay.desafio.android.ui.home
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.appfactory.domain.usecase.ContactUseCase
@@ -12,9 +13,9 @@ class HomeViewModel(private val contactApi: ContactUseCase) : ViewModel() {
 
     private val compositeDisposable = CompositeDisposable()
     private var eventHome = MutableLiveData<ViewEvent>()
-    val viewEvent = eventHome
+    val viewEvent: LiveData<ViewEvent> = eventHome
     private var stateHome = MutableLiveData<ViewState>()
-    val viewState = stateHome
+    val viewState: LiveData<ViewState> = stateHome
 
     fun getUsers() {
         eventHome.value = ViewEvent.ShowLoading(true)
